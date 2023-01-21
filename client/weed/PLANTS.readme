@@ -1,0 +1,251 @@
+ESX = exports['es_extended']:getSharedObject()
+local spawnedProps = {}
+local spawnedPropsCount = 0
+
+--ZOMBIE CODE: MAIN PLANTS CODETHAT WAS TRANSFERED AND MODIFIED TO CLIENT/MAIN.LUA WITH A LOOP SO YOU CAN ADD AS MUCH PLANT LOCATIONS AS YOU WANT
+
+Citizen.CreateThread(function()
+    
+    while true do
+
+        Wait(1000)
+        local playerCoords = GetEntityCoords(PlayerPedId())
+        local targetCoords = vector3(Config.drugZones.weedField.coords)
+        
+        local distance = #(playerCoords - targetCoords)
+
+        if (distance < Config.drugZones.weedField.density * 2) then
+            spawnWeedPlants()
+        else
+            Wait(500)
+        end
+
+    end
+
+end)
+
+function spawnWeedPlants()
+
+    while (spawnedPropsCount < Config.drugZones.weedField.maxPropCount) do
+
+        if (Config.drugZones.weedField.growTime) then
+            Wait(Config.drugZones.weedField.growTime * 1000)
+        else
+            Wait(0)
+        end
+
+        local weedCoords = generateWeedCoords()
+
+        ESX.Game.SpawnLocalObject(Config.drugZones.weedField.weedProp, weedCoords, function(obj)
+            Wait(100)
+            PlaceObjectOnGroundProperly(obj)
+            FreezeEntityPosition(obj, true)
+            table.insert(spawnedProps, obj)
+
+            local options = {
+                {
+                    icon = 'fa-solid fa-cannabis',
+                    label = TranslateCap('harvestWeed'),
+                    canInteract = function()
+                        if IsPedInAnyVehicle(PlayerPedId(), false) then
+                            return false
+                        else
+                            return true
+                        end
+                    end,
+                    onSelect = function(data)
+                        local nearbyId
+                        for i = 1, #spawnedProps, 1 do
+                            if data.entity == spawnedProps[i] then
+                                nearbyId = i
+                            end
+                        end
+                        local targetPropId = data.entity
+                        pickUpWeed(targetPropId, nearbyId)
+                    end
+                }
+            }
+    
+            exports.ox_target:addLocalEntity(obj, options)
+
+        end)
+
+        spawnedPropsCount += 1
+
+    end
+
+end
+
+function pickUpWeed(targetPropId, nearbyId)
+
+    local canCarryIt = lib.callback.await('esx_illegal:canCarryItem', false, 'weed')
+    local hasAllItems = lib.callback.await('esx_illegal:hasAllItems', false, Config.drugZones.weedField.itemsRequired)
+
+    if (hasAllItems == 1 and canCarryIt == 1) then
+
+        if Config.drugZones.weedField.skillCheck then
+
+            local success = lib.skillCheck(Config.drugZones.weedField.skillCheck)
+
+            if success then
+                progCircle(targetPropId, nearbyId)
+            else
+                lib.notify({
+                    description = TranslateCap('skillFail'),
+                    type = 'error',
+                    position = 'top',
+                    icon = 'ban'
+                })
+            end
+
+        else
+            progCircle(targetPropId, nearbyId)
+        end
+        
+    else
+
+        if (hasAllItems == 1) then
+            lib.notify({
+                description = TranslateCap('full'),
+                type = 'error',
+                position = 'top',
+                icon = 'ban'
+            })
+        else
+            local itemNames = {}
+            for item, data in pairs(exports.ox_inventory:Items()) do
+
+                for i, v in ipairs(Config.drugZones.weedField.itemsRequired) do
+                    if data.name == Config.drugZones.weedField.itemsRequired[i] then
+                        itemNames[i] = data.label
+                    end
+                end
+
+            end
+
+            local itemList = ""
+            for i, v in ipairs(itemNames) do
+                if i < #itemNames then
+                    itemList = itemList .. v .. ', '
+                else
+                    itemList = itemList .. v
+                end
+            end
+
+            lib.notify({
+                description = TranslateCap("noItems") .. itemList,
+                type = 'error',
+                position = 'top',
+                icon = 'ban'
+            })
+        end
+
+    end
+
+end
+
+function progCircle(targetPropId, nearbyId)
+
+    if lib.progressCircle({
+        duration = Config.drugZones.weedField.harvestDuration * 1000,
+        label = TranslateCap('harvestingWeed'),
+        position = 'bottom',
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            car = true,
+            move = true,
+            combat = true,
+            mouse = false,
+        },
+        anim = {
+            dict = 'amb@world_human_gardener_plant@female@exit',
+            clip = 'exit_female'
+        },
+    }) then
+        ESX.Game.DeleteObject(targetPropId)
+        table.remove(spawnedProps, nearbyId)
+        spawnedPropsCount -= 1
+
+        TriggerServerEvent('esx_illegal:giveWeed', Config.drugZones.weedField.harvestAmount)
+    else
+        lib.notify({
+            description = TranslateCap('harvestCanceled'),
+            type = 'error',
+            position = 'top',
+            icon = 'ban'
+        })
+    end
+
+end
+
+function generateWeedCoords()
+    while true do
+
+        Wait(100)
+
+        math.randomseed(GetGameTimer())
+        local modX = math.random(-Config.drugZones.weedField.density, Config.drugZones.weedField.density)
+        Wait(100)
+
+        math.randomseed(GetGameTimer())
+        local modY = math.random(-Config.drugZones.weedField.density, Config.drugZones.weedField.density)
+
+
+        local weedCoordX = Config.drugZones.weedField.coords.x + modX
+        local weedCoordY = Config.drugZones.weedField.coords.y + modY
+
+        --Find Ground
+        local groundCheckHeights = {
+            Config.drugZones.weedField.coords.z - 10,
+            Config.drugZones.weedField.coords.z - 9,
+            Config.drugZones.weedField.coords.z - 8,
+            Config.drugZones.weedField.coords.z - 7,
+            Config.drugZones.weedField.coords.z - 6,
+            Config.drugZones.weedField.coords.z - 5,
+            Config.drugZones.weedField.coords.z - 4,
+            Config.drugZones.weedField.coords.z - 3,
+            Config.drugZones.weedField.coords.z - 2,
+            Config.drugZones.weedField.coords.z - 1,
+            Config.drugZones.weedField.coords.z,
+            Config.drugZones.weedField.coords.z + 1,
+            Config.drugZones.weedField.coords.z + 2,
+            Config.drugZones.weedField.coords.z + 3,
+            Config.drugZones.weedField.coords.z + 4,
+            Config.drugZones.weedField.coords.z + 5,
+            Config.drugZones.weedField.coords.z + 6,
+            Config.drugZones.weedField.coords.z + 7,
+            Config.drugZones.weedField.coords.z + 8,
+            Config.drugZones.weedField.coords.z + 9,
+            Config.drugZones.weedField.coords.z + 10
+        }
+
+        local ground, weedCoordZ
+        for i, height in ipairs(groundCheckHeights) do
+            ground, weedCoordZ = GetGroundZFor_3dCoord(weedCoordX, weedCoordY, height)
+
+            if ground then
+                break;
+            end
+
+        end
+
+        local generatedCoords = vector3(weedCoordX, weedCoordY, weedCoordZ)
+
+        return generatedCoords
+
+    end
+
+end
+
+AddEventHandler('onResourceStop', function(resource)
+
+    if resource == GetCurrentResourceName() then
+
+        for k, v in pairs(spawnedProps) do
+            ESX.Game.DeleteObject(v)
+        end
+
+    end
+
+end)
