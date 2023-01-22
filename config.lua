@@ -22,7 +22,7 @@ Config.plantZones = {
         density = 20,                   -- density of random plant spawn.                                                                                                   (int)
         giveAmount = 1,                 -- amount that will be given to player upon harvesting.                                                                             (int)
         growTime = false,               -- In seconds grow time of a plant if not maxed out. (use 0/false for instant grow time)                                            (int/bool)
-        harvestDuration = 1,            -- In seconds or use 0 for instant harvesting.                                                                                      (int)
+        duration = 1,            -- In seconds or use 0 for instant harvesting.                                                                                      (int)
         itemsRequired = {},             -- To turn off use empty object, false will spam errors. Ex: {scissors = 1, shovel = 3}     (obj of strings)
         skillCheck = false,             -- skill check before harvesting a plant. Ex: {'easy', 'medium'} (use false to turn off)                                            (obj of strings/obj)
     --  {'easy', 'medium', 'hard', { areaSize = 50, speedMultiplier = 1 } }  https://overextended.github.io/docs/ox_lib/Interface/Client/skillcheck
@@ -54,12 +54,12 @@ Config.plantZones = {
         maxPropCount = 10,
         density = 20,
         growTime = 0,
-        harvestDuration = 1,
+        duration = 1,
         itemsRequired = { shovel = 1 },
         skillCheck = {'easy'},
 
         harvestText = TranslateCap('harvestWeed'),       --third eye label
-        harvestingText = TranslateCap('harvestingWeed'),  --progbar label
+        durationLabel = TranslateCap('harvestingWeed'),  --progbar label
         icon = 'fa-solid fa-cannabis'
     },
 
@@ -83,12 +83,12 @@ Config.plantZones = {
         maxPropCount = 10,
         density = 20,
         growTime = 0,
-        harvestDuration = 1,
+        duration = 1,
         itemsRequired = { scissors = 1 },
         skillCheck = false,
 
         harvestText = TranslateCap('harvestCocaine'),       --third eye label
-        harvestingText = TranslateCap('harvestingCocaine'),  --progbar label
+        durationLabel = TranslateCap('harvestingCocaine'),  --progbar label
         icon = 'fa-solid fa-cannabis'
     },
 
@@ -112,12 +112,12 @@ Config.plantZones = {
         maxPropCount = 10,
         density = 20,
         growTime = 0,
-        harvestDuration = 1,
+        duration = 1,
         itemsRequired = { scissors = 1 },
         skillCheck = false,
 
         harvestText = TranslateCap('harvestOpium'),       --third eye label
-        harvestingText = TranslateCap('harvestingOpium'),  --progbar label
+        durationLabel = TranslateCap('harvestingOpium'),  --progbar label
         icon = 'fa-solid fa-cannabis'
     }
 

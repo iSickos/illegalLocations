@@ -8,7 +8,7 @@ Locales['en'] =
   ['blipWeedProc'] = 'Weed Processing',
 
   -- General  ( If no label no notif ? (╯°□°)╯︵ ┻━┻, but maybe it good ┬─┬ノ( º _ ºノ) )
-  ['harvestCanceled'] = 'Harvesting was canceled',
+  ['canceled'] = 'Process was canceled',
   ['skillFail'] = 'Failed a skill task',
   ['noItems'] = "You don't have all required items: ",
   ['full'] = 'Inventory is full',

@@ -1,8 +1,7 @@
 for i, interior in pairs(Config.interiors) do
-
     Citizen.CreateThread(function()
         if interior.blip then
-            createBlip(interior.entranceCoords, interior.blipName, interior.spriteColor, interior.sprite)
+            createBlip(interior.entranceCoords, interior.blipName, false, interior.spriteColor, interior.sprite, false)
         end
     end)
 
@@ -41,19 +40,4 @@ for i, interior in pairs(Config.interiors) do
             }
         }
     })
-
-
-    
-end
-
-function createBlip(coords, blipName, color, sprite)
-    blip = AddBlipForCoord(coords.x, coords.y, coords.z)
-    SetBlipHighDetail(blip, true)
-    SetBlipSprite (blip, sprite)
-    SetBlipScale  (blip, 1.0)
-    SetBlipColour (blip, color)
-    SetBlipAsShortRange(blip, true)
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(blipName)
-    EndTextCommandSetBlipName(blip)
 end
