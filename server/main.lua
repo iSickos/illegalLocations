@@ -1,3 +1,5 @@
+ESX = exports['es_extended']:getSharedObject()
+
 lib.callback.register('esx_illegal:canCarryItem', function(source, item, amount)
     
     if exports.ox_inventory:CanCarryItem(source, item, amount) then
@@ -79,5 +81,41 @@ lib.callback.register('esx_illegal:takeItem', function(source, obj)
     local success = exports.ox_inventory:RemoveItem(source, obj.takeItem, obj.takeAmount)
 
     return(success)
+
+end)
+
+lib.callback.register('esx_illegal:countJob', function(source, jobsObj)
+    local xPlayers = ESX.GetPlayers()
+    local jobCount = {}
+    
+    for k, v in pairs(xPlayers) do
+        local xPlayer = ESX.GetPlayerFromId(v)
+        local playerJob = xPlayer.job.name
+    
+        if jobsObj[playerJob] then
+            if not jobCount[playerJob] then
+                jobCount[playerJob] = 0
+            end
+            jobCount[playerJob] += 1
+        end
+    end
+    
+    for jobName, reqCount in pairs(jobsObj) do
+        if (not jobCount[jobName]) or jobCount[jobName] < reqCount then
+            return false
+        end
+    end
+    
+    return true
+end)
+
+RegisterServerEvent('esx_illegal:CountCops')
+AddEventHandler('esx_illegal:CountCops', function()
+	
+	CopsConnected = 0
+
+
+
+	print('[',os.date("%H:%M"),']', 'esx_illegal: Counted all online cops: ', CopsConnected)
 
 end)

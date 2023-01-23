@@ -42,6 +42,8 @@ Config.plantZones = {
         spriteColor = 0,
         circleColor = 1,
 
+        jobCheck        = {},
+
         animDictionary  = 'amb@world_human_gardener_plant@female@exit',
         animClip        = 'exit_female',
 
@@ -71,6 +73,8 @@ Config.plantZones = {
         spriteColor = 0,
         circleColor = 1,
 
+        jobCheck        = {},
+
         giveItem = 'cocaine',
         giveAmount = 1,
 
@@ -99,6 +103,8 @@ Config.plantZones = {
         sprite = 497,
         spriteColor = 0,
         circleColor = 1,
+
+        jobCheck        = {},
 
         animDictionary  = 'amb@world_human_gardener_plant@female@exit',
         animClip        = 'exit_female',
@@ -134,14 +140,14 @@ Config.interiors = {
 
         entranceCoords  = vec3(722.4758, 2330.1638, 51.7504),
         entranceSize    = vec3(1.5, 1, 2),
-        entranceDebug   = true,
+        entranceDebug   = false,
 
         teleportTo      = vec3(1065.8807, -3183.4065, -40.1635),
         teleportBack    = vec3(721.9970, 2331.2434, 50.7504),
 
         exitCoords      = vec3(1066.6925, -3183.4819, -39.1638),
         exitSize        = vec3(1, 1.5, 2),
-        exitDebug       = true,
+        exitDebug       = false,
     }
 
 }
@@ -153,9 +159,11 @@ Config.process = {
         
         target          = vec4(1039.0546875, -3200.1828613281, -36.646793365479, 0),
         targetSize      = vec3(0.3, 0.3, 1),
-        targetDebug     = true,
+        targetDebug     = false,
         targetLabel     = TranslateCap('dryWeed'),
         targetIcon      = "fa-solid fa-sun",
+
+        jobCheck        = {},
 
         itemsRequired   = { weed = 3, rope = 1 },
 
@@ -168,63 +176,19 @@ Config.process = {
         giveAmount      = 1,
 
         skillCheck      = false,
-        processDuration = 2,
+        duration = 2,
         processingText  = TranslateCap('dryingWeed'),
     },
 
-    weedDryTwo = {
-        
-        target          = vec4(1041.2764892578, -3200.5249023438, -36.63752746582, 0),
-        targetSize      = vec3(0.3, 0.3, 1),
-        targetDebug     = true,
-        targetLabel     = TranslateCap('dryWeed'),
-        targetIcon      = "fa-solid fa-sun",
-
-        itemsRequired   = { weed = 3, rope = 1 },
-        
-        animDictionary  = 'amb@world_human_gardener_plant@female@exit',
-        animClip        = 'exit_female',
-
-        takeItem        = 'weed',
-        takeAmount      = 3,
-        giveItem        = 'dryweed',
-        giveAmount      = 1,
-
-        skillCheck      = false,
-        processDuration = 2,
-        processingText  = TranslateCap('dryingWeed'),
-    },
-
-    weedDryThree = {
-        
-        target          = vec4(1040.0469970703, -3200.4514160156, -36.63752746582, 0),
-        targetSize      = vec3(0.3, 0.3, 1),
-        targetDebug     = true,
-        targetLabel     = TranslateCap('dryWeed'),
-        targetIcon      = "fa-solid fa-sun",
-
-        itemsRequired   = { weed = 3, rope = 1 },
-
-        animDictionary  = 'amb@world_human_gardener_plant@female@exit',
-        animClip        = 'exit_female',
-
-        takeItem        = 'weed',
-        takeAmount      = 3,
-        giveItem        = 'dryweed',
-        giveAmount      = 1,
-
-        skillCheck      = false,
-        processDuration = 2,
-        processingText  = TranslateCap('dryingWeed'),
-    },
-
-    weedGrindOne = {
+    weedGrind = {
 
         target          = vec4(1038.2886962891, -3205.4338378906, -38.283721923828, 0),
         targetSize      = vec3(0.5, 0.5, 0.1),
-        targetDebug     = true,
+        targetDebug     = false,
         targetLabel     = TranslateCap('grindWeed'),
         targetIcon      = "fas fa-hand-scissors",
+
+        jobCheck        = {},
 
         itemsRequired   = { dryweed = 3, grinder = 1 },
 
@@ -237,58 +201,9 @@ Config.process = {
         giveAmount      = 1,
 
         skillCheck      = false,
-        processDuration = 2,
+        duration = 2,
 
         processingText  = TranslateCap('grindingWeed')
-    },
-
-    weedGrindTwo = {
-
-        target          = vec4(1038.4423828125, -3206.0952148438, -38.283721923828, 0),
-        targetSize      = vec3(0.5, 0.5, 0.1),
-        targetDebug     = true,
-        targetLabel     = TranslateCap('grindWeed'),
-        targetIcon      = "fas fa-hand-scissors",
-
-        itemsRequired   = { dryweed = 3, grinder = 1 },
-
-        animDictionary  = 'amb@world_human_gardener_plant@female@exit',
-        animClip        = 'exit_female',
-
-        takeItem        = 'dryweed',
-        takeAmount      = 3,
-        giveItem        = 'grindedweed',
-        giveAmount      = 1,
-
-        skillCheck      = false,
-        processDuration = 2,
-
-        processingText  = TranslateCap('grindingWeed')
-    },
-
-    weedGrindThree = {
-
-        target          = vec4(1033.5692138672, -3205.4299316406, -38.283721923828, 0),
-        targetSize      = vec3(0.5, 0.5, 0.1),
-        targetDebug     = true,
-        targetLabel     = TranslateCap('grindWeed'),
-        targetIcon      = "fas fa-hand-scissors",
-
-        itemsRequired   = { dryweed = 3, grinder = 1 },
-
-        animDictionary  = 'amb@world_human_gardener_plant@female@exit',
-        animClip        = 'exit_female',
-
-        takeItem        = 'dryweed',
-        takeAmount      = 3,
-        giveItem        = 'grindedweed',
-        giveAmount      = 1,
-
-        skillCheck      = false,
-        processDuration = 2,
-
-        processingText  = TranslateCap('grindingWeed')
-
     }
 
 }
