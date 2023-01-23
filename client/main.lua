@@ -1,8 +1,11 @@
 ESX = exports['es_extended']:getSharedObject()
 
-function itemCheck(obj, targetPropId, nearbyId, i)
+function runCheck(obj, targetPropId, nearbyId, i)
     local canCarryIt = lib.callback.await('esx_illegal:canCarryItem', false, obj.giveItem, obj.giveAmount)
     local hasAllItems = lib.callback.await('esx_illegal:hasAllItems', false, obj.itemsRequired)
+    local jobCount = lib.callback.await('esx_illegal:countJob', false, obj.jobCheck)
+
+    print(jobCount)
 
     if obj.takeItem then
         local canSwapIt = lib.callback.await('esx_illegal:canCarryItem', false, obj.takeItem, obj.takeAmount, obj.giveItem, obj.giveAmount)

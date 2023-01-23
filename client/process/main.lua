@@ -10,7 +10,7 @@ for i, process in pairs(Config.process) do
                 label = process.targetLabel,
                 canInteract = function() return not IsPedInAnyVehicle(PlayerPedId(), false) end,
                 onSelect = function()
-                    itemCheck(process)
+                    runCheck(process)
                 end
             }
         }
