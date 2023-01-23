@@ -5,103 +5,74 @@ function runCheck(obj, targetPropId, nearbyId, i)
     local hasAllItems = lib.callback.await('esx_illegal:hasAllItems', false, obj.itemsRequired)
     local jobCount = lib.callback.await('esx_illegal:countJob', false, obj.jobCheck)
 
-    print(jobCount)
+    if not jobCount then
+        lib.notify({
+            description = TranslateCap("jobCheck"),
+            type = 'error',
+            position = 'top',
+            icon = 'ban'
+        })
+        return
+    end
+    
+    if not hasAllItems then
+        local itemLabelsAndCounts = {}
+
+        for itemName, itemData in pairs(exports.ox_inventory:Items()) do
+            for requiredItemName, requiredCount in pairs(obj.itemsRequired) do
+                if itemData.name == requiredItemName then
+                    itemLabelsAndCounts[requiredItemName] = {
+                        label = itemData.label,
+                        count = requiredCount
+                    }
+                end
+            end
+        end
+
+        local itemList = ""
+
+        for itemName, itemData in pairs(itemLabelsAndCounts) do
+            itemList = itemList .. itemData.label .. ": " .. itemData.count
+
+            if next(itemLabelsAndCounts, itemName) ~= nil then
+                itemList = itemList .. ", "
+            end
+        end
+
+        lib.notify({
+            description = TranslateCap("noItems") .. itemList,
+            type = 'error',
+            position = 'top',
+            icon = 'ban'
+        })
+        return
+    end
+
+    if not canCarryIt then
+        lib.notify({
+            description = TranslateCap('full'),
+            type = 'error',
+            position = 'top',
+            icon = 'ban'
+        })
+        return
+    end
 
     if obj.takeItem then
         local canSwapIt = lib.callback.await('esx_illegal:canCarryItem', false, obj.takeItem, obj.takeAmount, obj.giveItem, obj.giveAmount)
 
-        if hasAllItems == 1 and canCarryIt == 1 and canSwapIt == 1 then
+        if canSwapIt then
             if obj.skillCheck then
                 skillCheck(obj)
             else
                 progBar(obj)
             end
-        else
-            if hasAllItems == 1 then
-                lib.notify({
-                    description = TranslateCap('full'),
-                    type = 'error',
-                    position = 'top',
-                    icon = 'ban'
-                })
-            else
-                local itemLabelsAndCounts = {}
-
-                for itemName, itemData in pairs(exports.ox_inventory:Items()) do
-                    for requiredItemName, requiredCount in pairs(obj.itemsRequired) do
-                        if itemData.name == requiredItemName then
-                            itemLabelsAndCounts[requiredItemName] = {
-                                label = itemData.label,
-                                count = requiredCount
-                            }
-                        end
-                    end
-                end
-
-                local itemList = ""
-
-                for itemName, itemData in pairs(itemLabelsAndCounts) do
-                    itemList = itemList .. itemData.label .. ": " .. itemData.count
-
-                    if next(itemLabelsAndCounts, itemName) ~= nil then
-                        itemList = itemList .. ", "
-                    end
-                end
-
-                lib.notify({
-                    description = TranslateCap("noItems") .. itemList,
-                    type = 'error',
-                    position = 'top',
-                    icon = 'ban'
-                })
-            end
         end
     else
-        if hasAllItems == 1 and canCarryIt == 1 then
-            if obj.skillCheck then
-                skillCheck(obj, targetPropId, nearbyId, i)
-            else
-                progBar(obj, targetPropId, nearbyId, i)
-            end
+        if obj.skillCheck then
+            skillCheck(obj, targetPropId, nearbyId, i)
         else
-            if hasAllItems == 1 then
-                lib.notify({
-                    description = TranslateCap('full'),
-                    type = 'error',
-                    position = 'top',
-                    icon = 'ban'
-                })
-            else
-                local itemLabelsAndCounts = {}
-
-                for itemName, itemData in pairs(exports.ox_inventory:Items()) do
-                    for requiredItemName, requiredCount in pairs(obj.itemsRequired) do
-                        if itemData.name == requiredItemName then
-                            itemLabelsAndCounts[requiredItemName] = {
-                                label = itemData.label,
-                                count = requiredCount
-                            }
-                        end
-                    end
-                end
-
-                local itemList = ""
-
-                for itemName, itemData in pairs(itemLabelsAndCounts) do
-                    itemList = itemList .. itemData.label .. ": " .. itemData.count
-
-                    if next(itemLabelsAndCounts, itemName) ~= nil then
-                        itemList = itemList .. ", "
-                    end
-                end
-
-                lib.notify({
-                    description = TranslateCap("noItems") .. itemList,
-                    type = 'error',
-                    position = 'top',
-                    icon = 'ban'
-                })
-            end
+            progBar(obj, targetPropId, nearbyId, i)
         end
     end
 end
