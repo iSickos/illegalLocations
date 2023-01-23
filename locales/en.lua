@@ -13,6 +13,7 @@ Locales['en'] =
   ['noItems'] = "You don't have all required items: ",
   ['full'] = 'Inventory is full',
   ['openNeNiuor'] = 'Open The Door',
+  ['jobCheck'] = 'City is lacking certain jobs rn unlucky :(',
   
   -- Weed
   ['harvestWeed'] = 'Harvest weed',
