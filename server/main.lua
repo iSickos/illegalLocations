@@ -3,9 +3,9 @@ ESX = exports['es_extended']:getSharedObject()
 lib.callback.register('esx_illegal:canCarryItem', function(source, item, amount)
     
     if exports.ox_inventory:CanCarryItem(source, item, amount) then
-        return 1
+        return true
     else
-        return 0
+        return false
     end
 
 end)
@@ -13,9 +13,9 @@ end)
 lib.callback.register('esx_illegal:canSwapItem', function(source, itemOne, itemOneAmount, itemTwo, itemTwoAmount)
     
     if exports.ox_inventory:CanSwapItem(source, itemOne, itemOneAmount, itemTwo, itemTwoAmount) then
-        return 1
+        return true
     else
-        return 0
+        return false
     end
     
 end)
@@ -33,9 +33,9 @@ lib.callback.register('esx_illegal:hasAllItems', function(source, item)
     end
 
     if allExist then
-        return 1
+        return true
     else
-        return 0
+        return false
     end
 
 end)
@@ -107,15 +107,4 @@ lib.callback.register('esx_illegal:countJob', function(source, jobsObj)
     end
     
     return true
-end)
-
-RegisterServerEvent('esx_illegal:CountCops')
-AddEventHandler('esx_illegal:CountCops', function()
-	
-	CopsConnected = 0
-
-
-
-	print('[',os.date("%H:%M"),']', 'esx_illegal: Counted all online cops: ', CopsConnected)
-
 end)
