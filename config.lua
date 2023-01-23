@@ -163,7 +163,7 @@ Config.process = {
         targetLabel     = TranslateCap('dryWeed'),
         targetIcon      = "fa-solid fa-sun",
 
-        jobCheck        = {},
+        jobCheck        = {police = 1},
 
         itemsRequired   = { weed = 3, rope = 1 },
 
