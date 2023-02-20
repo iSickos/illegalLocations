@@ -8,7 +8,7 @@ game 'gta5'
 name 'illegalLocations'
 author 'iSicko'
 version '3.0.0'
-repository 'https://github.com/iSickos/esx_illegal'
+repository 'https://github.com/iSickos/illegalLocations'
 description 'Upgraded esx_illegal to work with ox_target, ox_inventory and ox_lib'
 
 --[[ Manifest ]] --
