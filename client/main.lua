@@ -1,13 +1,13 @@
-ESX = exports['es_extended']:getSharedObject()
+lib.locale()
 
 function runCheck(obj, targetPropId, nearbyId, i)
-    local canCarryIt = lib.callback.await('esx_illegal:canCarryItem', false, obj.giveItem, obj.giveAmount)
-    local hasAllItems = lib.callback.await('esx_illegal:hasAllItems', false, obj.itemsRequired)
-    local jobCount = lib.callback.await('esx_illegal:countJob', false, obj.jobCheck)
+    local canCarryIt = lib.callback.await('illegalLocations:canCarryItem', false, obj.giveItem, obj.giveAmount)
+    local hasAllItems = lib.callback.await('illegalLocations:hasAllItems', false, obj.itemsRequired)
+    local jobCount = lib.callback.await('illegalLocations:countJob', false, obj.jobCheck)
 
     if not jobCount then
         lib.notify({
-            description = TranslateCap("jobCheck"),
+            description = locale("jobCheck"),
             type = 'error',
             position = 'top',
             icon = 'ban'
@@ -40,7 +40,7 @@ function runCheck(obj, targetPropId, nearbyId, i)
         end
 
         lib.notify({
-            description = TranslateCap("noItems") .. itemList,
+            description = locale("noItems") .. itemList,
             type = 'error',
             position = 'top',
             icon = 'ban'
@@ -50,7 +50,7 @@ function runCheck(obj, targetPropId, nearbyId, i)
 
     if not canCarryIt then
         lib.notify({
-            description = TranslateCap('full'),
+            description = locale('full'),
             type = 'error',
             position = 'top',
             icon = 'ban'
@@ -59,7 +59,7 @@ function runCheck(obj, targetPropId, nearbyId, i)
     end
 
     if obj.takeItem then
-        local canSwapIt = lib.callback.await('esx_illegal:canCarryItem', false, obj.takeItem, obj.takeAmount, obj.giveItem, obj.giveAmount)
+        local canSwapIt = lib.callback.await('illegalLocations:canCarryItem', false, obj.takeItem, obj.takeAmount, obj.giveItem, obj.giveAmount)
 
         if canSwapIt then
             if obj.skillCheck then
@@ -96,20 +96,20 @@ function progBar(obj, targetPropId, nearbyId, i)
         },
     }) then
         if obj.takeItem then
-            local itemTaken = lib.callback.await('esx_illegal:takeItem', false, obj)
+            local itemTaken = lib.callback.await('illegalLocations:removeItem', false, obj)
 
             if itemTaken then
-                TriggerServerEvent('esx_illegal:giveItem', obj)
+                lib.callback.await('illegalLocations:giveItem', false, obj)
             end
         else
-            ESX.Game.DeleteObject(targetPropId)
+            DeleteObject(targetPropId)
             table.remove(spawnedProps[i], nearbyId)
             spawnedPropsCount[i] = 1
-            TriggerServerEvent('esx_illegal:giveItem', obj)
+            lib.callback.await('illegalLocations:giveItem', false, obj)
         end
     else
         lib.notify({
-            description = TranslateCap('canceled'),
+            description = locale('canceled'),
             type = 'error',
             position = 'top',
             icon = 'ban'
@@ -124,7 +124,7 @@ function skillCheck(obj, targetPropId, nearbyId, i)
         progBar(obj, targetPropId, nearbyId, i)
     else
         lib.notify({
-            description = TranslateCap('skillFail'),
+            description = locale('skillFail'),
             type = 'error',
             position = 'top',
             icon = 'ban'
@@ -132,6 +132,7 @@ function skillCheck(obj, targetPropId, nearbyId, i)
     end
 end
 
+--Think this over please
 function createBlip(coords, blipName, radius, color, sprite, radiusColor)
     if radiusColor then
 	    local blip = AddBlipForRadius(coords.x, coords.y, coords.z, radius)
