@@ -1,10 +1,12 @@
-for i, interior in pairs(Config.interiors) do
-    Citizen.CreateThread(function()
-        if interior.blip then
-            createBlip(interior.entranceCoords, interior.blipName, false, interior.spriteColor, interior.sprite, false)
-        end
-    end)
+lib.locale()
 
+for i, interior in pairs(Config.interiors) do
+    if interior.blipOptions.blip then
+        CreateThread(function()
+            createBlip(interior.entranceCoords, interior.blipOptions.blipName, false, interior.blipOptions.spriteColor, interior.blipOptions.sprite, false)
+        end)
+    end
+    
     --Entrance
     exports.ox_target:addBoxZone({
         coords = vec3(interior.entranceCoords.x, interior.entranceCoords.y, interior.entranceCoords.z),
@@ -14,7 +16,7 @@ for i, interior in pairs(Config.interiors) do
         options = {
             {
                 icon = 'fa-solid fa-door-open',
-                label = TranslateCap('openNeNiuor') ,
+                label = locale('openNeNiuor') ,
                 canInteract = function() return not IsPedInAnyVehicle(PlayerPedId(), false) end,
                 onSelect = function()
                     SetEntityCoords(PlayerPedId(), interior.teleportTo.x, interior.teleportTo.y, interior.teleportTo.z, false, false, false, false)
@@ -23,7 +25,7 @@ for i, interior in pairs(Config.interiors) do
         }
     })
 
-    --Entrance
+    --Exit
     exports.ox_target:addBoxZone({
         coords = vec3(interior.exitCoords.x, interior.exitCoords.y, interior.exitCoords.z),
         size = interior.exitSize,
@@ -32,7 +34,7 @@ for i, interior in pairs(Config.interiors) do
         options = {
             {
                 icon = 'fa-solid fa-door-open',
-                label = TranslateCap('openNeNiuor') ,
+                label = locale('openNeNiuor') ,
                 canInteract = function() return not IsPedInAnyVehicle(PlayerPedId(), false) end,
                 onSelect = function()
                     SetEntityCoords(PlayerPedId(), interior.teleportBack.x, interior.teleportBack.y, interior.teleportBack.z, false, false, false, false)
