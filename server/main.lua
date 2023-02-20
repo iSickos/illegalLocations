@@ -1,3 +1,8 @@
+lib.versionCheck('iSickos/esx_illegal')
+if not lib.checkDependency('ox_lib', '0.0.1') then error("You need ox_lib for this resource to work") end
+if not lib.checkDependency('ox_target', '0.0.1') then error("You need ox_target for this resource to work") end
+if not lib.checkDependency('ox_inventory', '0.0.1') then error("You need ox_inventory for this resource to work") end
+
 if Config.Framework == 'esx' then
     ESX = exports['es_extended']:getSharedObject()
 end
