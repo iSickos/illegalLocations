@@ -3,7 +3,7 @@ for i, process in pairs(Config.process) do
         coords = vec3(process.target.x, process.target.y, process.target.z),
         size = process.targetSize,
         rotation = process.target.h,
-        debug = true,
+        debug = process.targetDebug,
         options = {
             {
                 icon = process.targetIcon,
