@@ -1,0 +1,22 @@
+{
+  "//": "BLIP NAMES",
+  "blipWeedField": "Weed Field",
+  "blipWeedProc": "Weed Processing",
+
+  "//": "General Options",
+  "canceled": "Process was canceled",
+  "skillFail": "Failed a skill task",
+  "noItems": "You don't have all required items: ",
+  "full": "Inventory is full",
+  "openNeNiuor": "Open The Door",
+  "jobCheck": "City is lacking certain jobs rn unlucky :(",
+
+  "harvestWeed": "Harvest weed",
+  "harvestingWeed": "Harvesting weed",
+
+  "dryWeed": "Dry weed",
+  "dryingWeed": "Drying weed",
+
+  "grindWeed": "Grind weed",
+  "grindingWeed": "Grinding weed"
+}
