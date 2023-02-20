@@ -2,33 +2,29 @@ spawnedProps = {}
 spawnedPropsCount = {}
 
 for i, zone in pairs(Config.plantZones) do
-    Citizen.CreateThread(function()
-        if zone.blip then
-            createBlip(zone.coords, zone.blipName, zone.density, zone.spriteColor, zone.sprite, zone.circleColor)
+    CreateThread(function()
+        if zone.blipOptions.blip then
+            createBlip(zone.coords, zone.blipOptions.blipName, zone.density, zone.blipOptions.spriteColor, zone.blipOptions.sprite, zone.blipOptions.circleColor)
         end
     end)
 
     spawnedProps[i] = {}
     spawnedPropsCount[i] = 0
 
-    Citizen.CreateThread(function()
-        while true do
-            Wait(1000)
-            local playerCoords = GetEntityCoords(PlayerPedId())
-            local targetCoords = vector3(zone.coords)
-            local distance = #(playerCoords - targetCoords)
+    local plantZone = lib.points.new(zone.coords, zone.density * 2, {zone = zone, index = i})
+    
+    function plantZone:onExit()
+        -- Maybe remove all plants idk could be a feature
+        print('left the zone')
+    end
 
-            if distance < zone.density * 2 then
-                spawnPlants(zone, i)
-            else
-                Wait(500)
-            end
-        end
-    end)
+    function plantZone:nearby()
+        spawnPlants(self.zone, self.index)
+    end
 end
 
 function spawnPlants(zone, i)
-    while spawnedPropsCount[i] < zone.maxPropCount do
+    while spawnedPropsCount[i] < zone.maxPlantCount do
         if zone.growTime then
             Wait(zone.growTime * 1000)
         else
@@ -37,98 +33,94 @@ function spawnPlants(zone, i)
 
         local plantCoords = generatePlantCoords(zone)
 
-        ESX.Game.SpawnLocalObject(zone.plantProp, plantCoords, function(obj)
-            Wait(100)
-            PlaceObjectOnGroundProperly(obj)
-            FreezeEntityPosition(obj, true)
-            table.insert(spawnedProps[i], obj)
+        local plant = CreateObject(zone.plantProp, plantCoords.x, plantCoords.y, plantCoords.z, false, false, false)
+        Wait(100)
+        PlaceObjectOnGroundProperly(plant)
+        FreezeEntityPosition(plant, true)
+        table.insert(spawnedProps[i], plant)
 
-            local options = {
-                {
-                    icon = zone.icon,
-                    label = zone.harvestText,
-                    canInteract = function()
-                        return not IsPedInAnyVehicle(PlayerPedId(), false)
-                    end,
-                    onSelect = function(data)
-                        local nearbyId
+        local options = {
+            {
+                icon = zone.icon,
+                label = zone.harvestText,
+                canInteract = function()
+                    return not IsPedInAnyVehicle(PlayerPedId(), false)
+                end,
+                onSelect = function(data)
+                    local nearbyId
 
-                        for j = 1, #spawnedProps[i] do
-                            if data.entity == spawnedProps[i][j] then
-                                nearbyId = j
-                            end
+                    for j = 1, #spawnedProps[i] do
+                        if data.entity == spawnedProps[i][j] then
+                            nearbyId = j
                         end
-
-                        local targetPropId = data.entity
-                        runCheck(zone, targetPropId, nearbyId, i)
                     end
-                }
+
+                    local targetPropId = data.entity
+                    runCheck(zone, targetPropId, nearbyId, i)
+                end
             }
+        }
+        exports.ox_target:addLocalEntity(plant, options)
 
-            exports.ox_target:addLocalEntity(obj, options)
-        end)
-
-        spawnedPropsCount[i] = 1
+        spawnedPropsCount[i] += 1
     end
 end
 
 function generatePlantCoords(zone)
-    while true do
+    Wait(100)
 
-        Wait(100)
+    math.randomseed(GetGameTimer())
+    local modX = math.random(-zone.density, zone.density)
+    Wait(100)
 
-        math.randomseed(GetGameTimer())
-        local modX = math.random(-zone.density, zone.density)
-        Wait(100)
+    math.randomseed(GetGameTimer())
+    local modY = math.random(-zone.density, zone.density)
 
-        math.randomseed(GetGameTimer())
-        local modY = math.random(-zone.density, zone.density)
+    local plantCoordX = zone.coords.x + modX
+    local plantCoordY = zone.coords.y + modY
 
-        local plantCoordX = zone.coords.x + modX
-        local plantCoordY = zone.coords.y + modY
+    -- Find Ground
+    local groundCheckHeights = {
+        zone.coords.z - 10,
+        zone.coords.z - 9,
+        zone.coords.z - 8,
+        zone.coords.z - 7,
+        zone.coords.z - 6,
+        zone.coords.z - 5,
+        zone.coords.z - 4,
+        zone.coords.z - 3,
+        zone.coords.z - 2,
+        zone.coords.z - 1,
+        zone.coords.z,
+        zone.coords.z + 1,
+        zone.coords.z + 2,
+        zone.coords.z + 3,
+        zone.coords.z + 4,
+        zone.coords.z + 5,
+        zone.coords.z + 6,
+        zone.coords.z + 7,
+        zone.coords.z + 8,
+        zone.coords.z + 9,
+        zone.coords.z + 10
+    }
 
-        --Find Ground
-        local groundCheckHeights = {
-            zone.coords.z - 10,
-            zone.coords.z - 9,
-            zone.coords.z - 8,
-            zone.coords.z - 7,
-            zone.coords.z - 6,
-            zone.coords.z - 5,
-            zone.coords.z - 4,
-            zone.coords.z - 3,
-            zone.coords.z - 2,
-            zone.coords.z - 1,
-            zone.coords.z,
-            zone.coords.z + 1,
-            zone.coords.z + 2,
-            zone.coords.z + 3,
-            zone.coords.z + 4,
-            zone.coords.z + 5,
-            zone.coords.z + 6,
-            zone.coords.z + 7,
-            zone.coords.z + 8,
-            zone.coords.z + 9,
-            zone.coords.z + 10}
+    local ground, plantCoordZ
 
-        local ground, plantCoordZ
-
-        for i, height in ipairs(groundCheckHeights) do
-            ground, plantCoordZ = GetGroundZFor_3dCoord(plantCoordX, plantCoordY, height)
-            if ground then break end
-        end
-
-        local generatedCoords = vector3(plantCoordX, plantCoordY, plantCoordZ)
-
-        return generatedCoords
+    for i, height in ipairs(groundCheckHeights) do
+        ground, plantCoordZ = GetGroundZFor_3dCoord(plantCoordX, plantCoordY, height)
+        if ground then break end
     end
+
+    local generatedCoords = vector3(plantCoordX, plantCoordY, plantCoordZ)
+
+    return generatedCoords
 end
 
 AddEventHandler('onResourceStop', function(resource)
     if resource == GetCurrentResourceName() then
         for i, zone in pairs(Config.plantZones) do
             for j, v in pairs(spawnedProps[i]) do
-                ESX.Game.DeleteObject(v)
+                DeleteObject(v)
             end
         end
     end
